@@ -32,6 +32,125 @@ struct DoublyLinkedList {
 };
 
 
+// stergere in fct de an (de la mijloc)
+void deleteByYear(DLList* list, int year) {
+	if (list->start)
+	{
+		Node* current = list->start;
+
+		while (current) {
+			Node* toDelete = current; // Salvez nodul de șters
+			current = current->next;  // Merg la următorul nod înainte de a șterge
+
+			if (toDelete->car.year > year) {
+				
+				if (toDelete->prev) { // Dacă nu este primul nod
+					toDelete->prev->next = toDelete->next;
+				}
+				else { // Dacă este primul nod
+					list->start = toDelete->next;
+				}
+
+				if (toDelete->next) { // Dacă nu este ultimul nod
+					toDelete->next->prev = toDelete->prev;
+				}
+				else { // Dacă este ultimul nod
+					list->end = toDelete->prev;
+				}
+
+				
+				free(toDelete->car.manufacturer);  
+				free(toDelete);  
+			}
+		}
+	}
+	else
+	{
+		printf("lista e goala");
+	}
+}
+
+//inserare in fct de an
+void insertInMiddleByYear(DLList* list, Car car) {
+	Node* newNode = malloc(sizeof(Node));
+	newNode->car = car;
+	newNode->next = NULL;
+	newNode->prev = NULL;
+
+	// Dacă lista este goală, noul nod devine singurul element
+	if (!list->start) {
+		list->start = newNode;
+		list->end = newNode;
+		return;
+	}
+
+	Node* current = list->start;
+
+	// Căutăm poziția unde trebuie inserat noul nod
+	while (current && current->car.year < car.year) {
+		current = current->next;
+	}
+
+	// Dacă trebuie inserat la sfârșit
+	if (!current) {
+		list->end->next = newNode;
+		newNode->prev = list->end;
+		list->end = newNode;
+		return;
+	}
+
+	// Dacă trebuie inserat la început
+	if (current == list->start) {
+		newNode->next = list->start;
+		list->start->prev = newNode;
+		list->start = newNode;
+		return;
+	}
+
+	// Inserare între două noduri
+	newNode->next = current;
+	newNode->prev = current->prev;
+	current->prev->next = newNode;
+	current->prev = newNode;
+}
+
+//inserare in fc de an daca an>2020
+void insertInMiddleIfYearAbove2020(DLList* list, Car car) {
+	// Adăugăm doar mașinile care au anul mai mare decât 2020
+	if (car.year <= 2020) {
+		printf("❌ Mașina %s (%d) nu a fost adăugată! Doar an > 2020 este permis.\n", car.manufacturer, car.year);
+		return;
+	}
+
+	Node* newNode = malloc(sizeof(Node));
+	newNode->car = car;
+	newNode->next = NULL;
+	newNode->prev = NULL;
+
+	// Dacă lista este goală, noul nod devine primul și ultimul element
+	if (!list->start) {
+		list->start = newNode;
+		list->end = newNode;
+		return;
+	}
+
+	Node* current = list->start;
+
+	// Căutăm poziția unde trebuie inserat noul nod
+	while (current && current->car.year < car.year) {
+		current = current->next;
+	}
+
+	// Dacă trebuie inserat la sfârșit
+	if (!current) {
+		list->end->next = newNode;
+		newNode->prev = list->end;
+		list->end = newNode;
+		return;
+	}
+
+}
+
 void printCar(Car car)
 {
 	printf("%s din anul %d are %.2f\n", car.manufacturer, car.year, car.cc);
@@ -247,4 +366,22 @@ int main()
 	parseBtoE(list);
 	printf("\n-------elementul sters este: ");
 	printCar(deleteCar);
+
+	printf("\n-------stergere in functei de an (de la mijloc)-----------\n");
+	deleteByYear(&list, 2020);
+	parseBtoE(list);
+
+
+	printf("\n-------inserare in functei de an (de la mijloc)-----------\n");
+	insertInMiddleByYear(&list, (Car){2024,"Logan", 1.4});
+	insertInMiddleByYear(&list, (Car) { 2005, "Logan", 1.4 });
+	insertInMiddleByYear(&list, (Car) { 2020, "Logan", 1.4 });
+	parseBtoE(list);
+
+	printf("\n-------inserare in functei de an >2020 (de la mijloc)-----------\n");
+	insertInMiddleIfYearAbove2020(&list, (Car) { 2015, "Renault", 1.4 });
+	insertInMiddleIfYearAbove2020(&list, (Car) { 2025, "Renault", 1.4 });
+	insertInMiddleIfYearAbove2020(&list, (Car) { 2005, "Renault", 1.4 });
+
+	parseBtoE(list);
 }
