@@ -146,7 +146,7 @@ Car deleteFromEnd(DLList* list)
 	if (list->end)
 	{
 		Node* nodeToBeDeleted = list->end;
-		Car carToBeDeleted = list->start->car;//=nodeToBeDelete.start;   acelaci lucru
+		Car carToBeDeleted = list->end->car;//=nodeToBeDelete.start;   acelaci lucru
 
 		if (list->end->prev)
 		{
