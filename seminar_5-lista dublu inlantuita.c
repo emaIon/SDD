@@ -41,8 +41,8 @@ void insertAtBeginning(DLList* list, Car car)
 	Node* newNode = malloc(sizeof(Node));
 	newNode->car = car;
 
-	newNode->next = list->start;
-	newNode->prev = NULL;
+	newNode->next = list->start;//setez vecinii noului nod
+	newNode->prev = NULL;//setez vecinii noului nod
 
 	if (list->start)//daca avem elemente in lista
 	{
