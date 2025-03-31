@@ -173,7 +173,24 @@ HT readCarsFromFile(const char* fileName) {
 	return hashTable;
 
 }
-
+//Car searchHT(HT hashTable, char* key)
+//{
+//	int position = hash(hashTable.size, key);
+//	Node* aux = hashTable.array[position];
+//
+//	while (aux)
+//	{
+//		if (aux && strcmp(aux->car.manufacturer, key))
+//		{
+//			return aux->car;
+//		}
+//		aux = aux->next;
+//	}
+//	else
+//	{
+//		Car c = { .year = 0, .manufacturer = "-", .cc = 0 };
+//	}
+//}
 int main() {
 
 	
