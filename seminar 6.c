@@ -33,9 +33,6 @@ struct Node {
 struct HashTable {
 	int size;
 	Node** array;
-
-
-
 };
 
 void printCar(Car car) {
@@ -86,7 +83,7 @@ void printHT(HT hashTable)
 }
 
 
-//era delete From end- codul e la fel
+//era insert From end- codul e la fel
 void insertToList(Node** start, Car car) {
 
 	Node* newNode = malloc(sizeof(Node));
@@ -94,21 +91,17 @@ void insertToList(Node** start, Car car) {
 	newNode->next = NULL;
 
 	if (*start) {
-
 		Node* aux = *start;
-
-		while (aux->next) {
+		while (aux->next) 
+		{
 			aux = aux->next;
-		}
-
+		  }
 		aux->next = newNode;
-
 	}
 	else {
 		*start = newNode;
 	}
 }
-
 
 
 
@@ -171,8 +164,8 @@ HT readCarsFromFile(const char* fileName) {
 
 	fclose(f);
 	return hashTable;
-
 }
+
 //Car searchHT(HT hashTable, char* key)
 //{
 //	int position = hash(hashTable.size, key);
@@ -191,10 +184,9 @@ HT readCarsFromFile(const char* fileName) {
 //		Car c = { .year = 0, .manufacturer = "-", .cc = 0 };
 //	}
 //}
+
+
 int main() {
-
-	
-
 	HT hashTable=readCarsFromFile( "cars.txt");
 
 	printHT(hashTable);
