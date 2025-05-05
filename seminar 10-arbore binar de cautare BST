@@ -1,1 +1,206 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<malloc.h>
+#include<string.h>
+#include<stdlib.h>
+
+#define LINESIZE 128
+#define COUNT 10
+
+//arbore binar de cautare BST
+
+
+typedef struct FileProperties FileProp;
+typedef struct TreeNode TreeNode;
+
+
+struct FileProperties{
+	int fileId;
+    char* fileName;
+    int size;
+    char isDirectory;
+};
+
+struct TreeNode {
+    FileProp fileProp;
+    TreeNode* left;
+    TreeNode* right;
+};
+
+void insertTreeNode(TreeNode** root, FileProp fp)
+{
+	if (*root)
+	{
+		if (fp.fileId < (*root)->fileProp.fileId)
+		{
+			insertTreeNode(&(*root)->left, fp);
+		}
+		else {
+
+			insertTreeNode(&(*root)->right, fp);
+		}
+	}
+	else
+	{
+		TreeNode* newNode = malloc(sizeof(TreeNode));
+		newNode->fileProp = fp;
+		newNode->left = NULL;
+		newNode->right = NULL;
+		*root = newNode;
+	}
+}
+
+
+FileProp readFilePropFromFile(FILE* f) {
+
+	char buffer[LINESIZE];
+
+	fgets(buffer, LINESIZE, f);
+
+	FileProp fp;
+
+	char* token = strtok(buffer, ",");
+	fp.fileId = atoi(token);
+
+
+	token = strtok(NULL, ",");
+	fp.fileName = malloc((strlen(token) + 1) * sizeof(char));
+	strcpy(fp.fileName, token);
+
+	token = strtok(NULL, ",");
+	fp.size = atoi(token);
+
+
+	token = strtok(NULL, ",");
+	fp.isDirectory = (char)atoi(token);
+
+	return fp;
+
+}
+
+void readDataFromFile(TreeNode** root, const char* fileName) {
+
+	FILE* f;
+	f = fopen(fileName, "r");
+
+	while (!feof(f))
+	{
+		insertTreeNode(root, readFilePropFromFile(f));
+
+	}
+}
+
+
+//void printFileProp()
+//{
+// printf();
+//}
+
+//nu tb sa o tine minte
+void printTree(TreeNode* root, int space)
+{
+	if (root)
+	{
+		space += COUNT;
+		printTree(root->right, space);
+
+		print("\n");
+		for (int i = COUNT; i < space; i++)
+		{
+			print(" ");
+		}
+
+		printf("%d\n", root->fileProp.fileId);
+		printTree(root->left, space);
+	}
+}
+
+//parcurgere
+void inorderTraversal(TreeNode* root)
+{
+	if (root)
+	{
+		inorderTraversal(root->left); //left
+		printFileProp(root->fileProp);//root
+		inorderTraversal(root->right);//right
+
+	}
+}
+
+void preorderTraversal(TreeNode* root)
+{
+	if (root)
+	{
+		printFileProp(root->fileProp);//root
+		preorderTraversal(root->left);
+		preorderTraversal(root->right);
+
+	}
+}
+
+void postorderTraversal(TreeNode* root)
+{
+	if (root)
+	{
+		postorderTraversal(root->left);
+		postorderTraversal(root->right);
+		printFileProp(root->fileProp);//root
+	}
+}
+
+
+//functia de cautare
+FileProp serachTree(TreeNode* root, int fileId)
+{
+	if (root)
+	{
+		if (fileId == root->fileProp.fileId)
+		{
+			return root->fileProp;
+		}
+
+
+		if (fileId < root->fileProp.fileId)
+		{
+			serachTree(root->left, fileId);
+		}
+		else
+		{
+			serachTree(root->right, fileId);
+		}
+	}
+	else
+	{
+		FileProp notFound = { .fileId = 0, .fileName = "", .size = 0, .isDirectory = 0 };
+		return notFound;
+	}
+}
+
+
+
+int main()
+{
+
+	TreeNode* tree = NULL;
+
+	readDataFromFile(&tree,"files.txt");
+	printTree(tree, 10);
+
+
+	printf("\n-------------------\n");
+	inorderTraversal(tree);
+
+
+	printf("\n-------------------\n");
+	preorderTraversal(tree);
+
+	printf("\n-------------------\n");
+	postorderTraversal(tree);
+
+	printFileProp(searchTree(tree, 12));
+
+}
+
+
+
 
