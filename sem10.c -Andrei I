@@ -1,0 +1,151 @@
+#define _CRT_SECURE_NO_WARNINGS
+#define LINE_SIZE 128
+#define COUNT 10
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+
+typedef struct FileProperties FileProperties;
+typedef struct TreeNode TreeNode;
+
+struct FileProperties {
+    int id;
+    char* filename;
+    int size;
+    char isDirectory;
+};
+
+struct TreeNode {
+    FileProperties fileProperties;
+    TreeNode* left;
+    TreeNode* right;
+};
+
+void printFileProperties(FileProperties fp) {
+    printf("%d, %s, %d, %d\n", fp.id, fp.filename, fp.size, fp.isDirectory);
+}
+
+FileProperties readFilePropertiesFromFile(FILE* f) {
+    char buff[LINE_SIZE];
+    fgets(buff, LINE_SIZE, f);
+
+    FileProperties fp;
+    char* token = strtok(buff, ",");
+    fp.id = atoi(buff);
+
+    token = strtok(NULL, ",");
+    fp.filename = malloc((strlen(token) + 1) * sizeof(char));
+    strcpy(fp.filename, token);
+
+    token = strtok(NULL, ",");
+    fp.size = atoi(token);
+
+    token = strtok(NULL, ",");
+    fp.isDirectory = atoi(token);
+
+    return fp;
+
+}
+
+void printTree(TreeNode* root, int space) {
+    if (!root)
+        return;
+    
+    space += COUNT;
+    printTree(root->right, space);
+    printf("\n");
+    for (int i = COUNT; i < space; i++)
+        printf(" ");
+
+    printf("%d\n", root->fileProperties.id);
+
+    printTree(root->left, space);
+    
+}
+
+void insertTreeNode(TreeNode** root, FileProperties fp) {
+    if (!(*root)) {
+        TreeNode* newNode = malloc(sizeof(TreeNode));
+        newNode->fileProperties = fp;
+        newNode->left = NULL;
+        newNode->right = NULL;
+        *root = newNode;
+        return;
+    }
+
+    if (fp.id < (*root)->fileProperties.id) {
+        insertTreeNode(&(*root)->left, fp);
+    }
+    else
+        insertTreeNode(&(*root)->right, fp);
+}
+
+void readDataFromFile(TreeNode* treeNode, const char* fileName) {
+    FILE* f;
+    f = fopen(fileName, "r");
+
+
+    while (!feof(f)) {
+        insertTreeNode(treeNode, readFilePropertiesFromFile(f));
+    }
+
+
+}
+
+FileProperties searchTree(TreeNode* root, int fileID) {
+    if (root == NULL)
+        return;
+
+    if (root->fileProperties.id == fileID)
+        return root->fileProperties;
+    if(fileID <  root->fileProperties.id)
+        searchTree(root->left, fileID);
+    else
+        searchTree(root->right, fileID);
+}
+
+void inOrderTraversal(TreeNode* treeNode) {
+    if (treeNode == NULL)
+        return;
+    inOrderTraversal(treeNode->left);
+    printFileProperties(treeNode->fileProperties);
+    inOrderTraversal(treeNode->right);
+}
+void preOrderTraversal(TreeNode* treeNode) {
+    if (treeNode == NULL)
+        return;
+    printFileProperties(treeNode->fileProperties);
+    preOrderTraversal(treeNode->left);
+    preOrderTraversal(treeNode->right);
+}
+
+void postOrderTraversal(TreeNode* treeNode) {
+    if (treeNode == NULL)
+        return;
+    postOrderTraversal(treeNode->left);
+    postOrderTraversal(treeNode->right);
+    printFileProperties(treeNode->fileProperties);
+}
+
+int treeHeight(TreeNode* root) {
+    if (!root)
+        return 0;
+    int leftHeight = treeHeight(root->left);
+    int rightHeight = treeHeight(root->right);
+    return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
+}
+
+int main() {
+    TreeNode* tree = NULL;
+
+    readDataFromFile(&tree, "file.txt");
+
+    printTree(tree, 10);
+    
+    inOrderTraversal(tree);
+
+    printf("%d\n", treeHeight(tree));
+    return 0;
+}
