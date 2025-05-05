@@ -215,7 +215,3 @@ int main()
 	printFileProp(searchTree(tree, 12));
 
 }
-
-
-
-
